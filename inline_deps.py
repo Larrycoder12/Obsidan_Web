@@ -26,6 +26,13 @@ EXTERNAL_RESOURCES = [
     ("js", "https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"),
     # Mermaid
     ("js", "https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.6.1/mermaid.min.js"),
+    # CodeMirror 5 + vim keymap (vim mode editor)
+    ("js", "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"),
+    ("js", "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/markdown/markdown.js"),
+    ("js", "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/keymap/vim.js"),
+    ("js", "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/search/searchcursor.js"),
+    ("js", "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/dialog/dialog.js"),
+    ("css", "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/dialog/dialog.css"),
 ]
 
 
