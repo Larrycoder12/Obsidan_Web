@@ -10,9 +10,20 @@
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js" onload="window._katexReady=true"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.6.1/mermaid.min.js"></script>
-<!-- WebVim -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/webvim@latest/dist/webvim-0.1.0.min.css"/>
-<script src="https://cdn.jsdelivr.net/npm/webvim@latest/dist/webvim-0.1.0.min.js"></script>
+<!-- WebVim (loaded after page render to avoid blocking) -->
+<script>
+// Dynamically load WebVim so it never blocks page render
+(function(){
+  var link=document.createElement('link');
+  link.rel='stylesheet';
+  link.href='https://cdn.jsdelivr.net/npm/webvim@0.1.0/dist/webvim.min.css';
+  document.head.appendChild(link);
+  var sc=document.createElement('script');
+  sc.src='https://cdn.jsdelivr.net/npm/webvim@0.1.0/dist/webvim.min.js';
+  sc.onerror=function(){console.warn('WebVim CDN not available, using fallback textarea');};
+  document.head.appendChild(sc);
+})();
+</script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#e6edf3;height:100vh;overflow:hidden}
