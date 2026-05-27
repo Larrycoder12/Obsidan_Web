@@ -4,6 +4,7 @@
 import re
 import sys
 import os
+import hashlib
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 try:
@@ -47,9 +48,9 @@ def fetch_url(url, timeout=15):
         return (url, None)
 
 
-def is_tailwind_inline(tag):
-    """Check if this is the Tailwind CDN script tag we want to keep."""
-    return 'src' in tag and TAILWIND_CDN in tag.get('src', '')
+def content_hash(content):
+    """Return a short hash of content for deduplication."""
+    return hashlib.md5(content.encode("utf-8")).hexdigest()[:16]
 
 
 def process_file(html_path, output_path=None):
@@ -77,6 +78,10 @@ def process_file(html_path, output_path=None):
     if tw_preflight:
         resources[TAILWIND_PREFLIGHT] = ("css", tw_preflight)
 
+    # Build content hashes of fetched resources for fast lookup
+    fetched_js_hashes = {content_hash(v): k for k, (kind, v) in resources.items() if kind == "js"}
+    fetched_css_hashes = {content_hash(v): k for k, (kind, v) in resources.items() if kind == "css"}
+
     # ── 2. Build replacement map ─────────────────────────────────────────────
     css_map = {}  # url -> inlined CSS content
     js_map = {}   # url -> inlined JS content
@@ -103,8 +108,7 @@ def process_file(html_path, output_path=None):
 
     html = re.sub(r'<link([^>]+)/?>', inline_css, html)
 
-    # Remove duplicate/tailwind-specific link tags that reference our inlined CSS
-    # ── 4. Process <script> tags (JS) ────────────────────────────────────────
+    # ── 4. Process <script> tags (JS) — replace CDN src with inlined content ─
     def inline_js(match):
         tag_content = match.group(0)
         src = re.search(r'src=["\']([^"\']+)["\']', tag_content)
@@ -122,12 +126,35 @@ def process_file(html_path, output_path=None):
 
     html = re.sub(r'<script[^>]*>.*?</script>', inline_js, html, flags=re.DOTALL)
 
-    # ── 5. Inject Tailwind preflight CSS if fetched ───────────────────────────
+    # ── 5. Inject CDN resources NOT already inline in the source ─────────────
+    # The source HTML already has KaTeX, Mermaid, CodeMirror as UMD bundles without src attrs.
+    # We detect collisions via content hash and skip injecting if already present.
+    injected = []
+
+    for url, (kind, content) in sorted(resources.items(), key=lambda x: x[0]):
+        if kind == "css":
+            # Always inject CSS (CSS is harder to deduplicate by content alone)
+            injected.append(f"<style>\n/* {url.split('/')[-1]} */\n{content}\n</style>")
+        else:
+            h = content_hash(content)
+            if h not in fetched_js_hashes or fetched_js_hashes[h] == url:
+                # Not already in HTML (or hash uniquely matches this URL) — inject it
+                pass
+            # Check if content is already present in the HTML
+            if content[:200] not in html:
+                injected.append(f"<script>\n{content}\n</script>")
+            else:
+                print(f"  [SKIP] {url.split('/')[-1]} — content already inline")
+
+    if injected:
+        html = html.replace("</head>", "\n".join(injected) + "\n</head>")
+
+    # ── 6. Inject Tailwind preflight CSS if fetched ───────────────────────────
     if tw_preflight:
         inject_style = f"<style>\n/* Tailwind Preflight */\n{tw_preflight}\n</style>"
         html = html.replace("</head>", f"{inject_style}\n</head>")
 
-    # ── 6. Write output ───────────────────────────────────────────────────────
+    # ── 7. Write output ───────────────────────────────────────────────────────
     with open(output_path, "w", encoding="utf-8") as f:
         f.write(html)
 
