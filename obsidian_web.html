@@ -10,6 +10,9 @@
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js" onload="window._katexReady=true"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.6.1/mermaid.min.js"></script>
+<!-- WebVim -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/webvim@latest/dist/webvim-0.1.0.min.css"/>
+<script src="https://cdn.jsdelivr.net/npm/webvim@latest/dist/webvim-0.1.0.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Segoe UI',system-ui,sans-serif;background:#0d1117;color:#e6edf3;height:100vh;overflow:hidden}
@@ -46,6 +49,23 @@ input:focus,textarea:focus{outline:none}
 .tb-btn.sync-btn{background:#238636;color:#fff;padding:3px 10px}
 .tb-btn.sync-btn:hover{background:#2ea043}
 .tb-btn.sync-btn:disabled{opacity:.5;cursor:not-allowed}
+
+/* View mode switcher buttons */
+.view-btn{display:flex;align-items:center;padding:3px 5px;border-radius:3px;border:none;background:transparent;color:#8b949e;cursor:pointer;transition:background .15s,color .15s}
+.view-btn:hover{background:#21262d;color:#e6edf3}
+.view-btn.active{background:#7c3aed;color:#fff}
+
+/* Editor polish */
+#main-editor:focus{box-shadow:inset 0 0 0 1px rgba(124,58,237,.25)}
+#webvim-editor:focus{box-shadow:inset 0 0 0 1px rgba(124,58,237,.25)}
+
+/* Nicer scrollbars */
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#30363d;border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:#484f58}
+::-webkit-scrollbar-corner{background:transparent}
+
 #editor-path{font-size:11px;color:#8b949e;font-family:monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0}
 .dirty-dot{display:inline-block;width:6px;height:6px;background:#f0b72f;border-radius:50%;margin-right:5px;flex-shrink:0}
 
@@ -126,6 +146,66 @@ input:focus,textarea:focus{outline:none}
 .r-callout-important{background:rgba(167,139,250,.1);border-color:#a78bfa;color:#ddd6fe}
 .r-callout-info{background:rgba(88,166,255,.06);border-color:#58a6ff;color:#bfdbfe}
 .r-callout-head{font-weight:700;font-size:.82em;text-transform:uppercase;letter-spacing:.06em;opacity:.9;display:block;margin-bottom:.15em}
+/* ── Main Editor textarea ── */
+#main-editor{font-family:'JetBrains Mono','Fira Code',ui-monospace,monospace;font-size:14px;line-height:1.75}
+#main-editor::selection{background:rgba(124,58,237,.35)}
+#main-editor::-webkit-scrollbar{width:4px}
+#main-editor::-webkit-scrollbar-thumb{background:#30363d;border-radius:2px}
+
+/* ── Preview pane ── */
+#preview-content{color:#c9d1d9;font-size:14px;line-height:1.7}
+#preview-content h1{color:#e6edf3;font-weight:700;font-size:1.55em;line-height:1.3;border-bottom:1px solid #21262d;padding-bottom:.15em;margin-bottom:.3em;margin-top:.5em}
+#preview-content h2{color:#e6edf3;font-weight:600;font-size:1.28em;line-height:1.3;border-bottom:1px solid #21262d;padding-bottom:.1em;margin-bottom:.25em;margin-top:.4em}
+#preview-content h3{color:#c9d1d9;font-weight:600;font-size:1.1em;margin-bottom:.2em;margin-top:.35em}
+#preview-content h4,#preview-content h5,#preview-content h6{color:#8b949e;font-weight:600;margin-bottom:.15em;margin-top:.3em}
+#preview-content p{margin-bottom:.6em}
+#preview-content a{color:#58a6ff;text-decoration:none}
+#preview-content a:hover{text-decoration:underline}
+#preview-content code{font-family:'JetBrains Mono',monospace;font-size:.88em;color:#e0aaff;background:rgba(30,0,60,.45);border-radius:3px;padding:.05em .25em}
+#preview-content pre{background:#161b22;border:1px solid #30363d;border-radius:6px;padding:.6em 1em;margin:.4em 0;overflow-x:auto}
+#preview-content pre code{background:none;padding:0;color:#c9d1d9}
+#preview-content blockquote{color:#8b949e;border-left:3px solid #7c3aed;padding-left:.7em;margin:.4em 0;font-style:italic}
+#preview-content ul,#preview-content ol{margin:.3em 0 .3em 1.2em}
+#preview-content li{margin:.1em 0}
+#preview-content li input[type=checkbox]{margin-right:.4em;accent-color:#57ab5a}
+#preview-content hr{border:none;border-top:1px solid #30363d;margin:.6em 0}
+#preview-content img{max-width:100%;border-radius:4px}
+#preview-content table{border-collapse:collapse;width:100%;margin:.4em 0}
+#preview-content th{background:#161b22;color:#e6edf3;font-weight:600;border:1px solid #30363d;padding:.4em .8em;text-align:left}
+#preview-content td{border:1px solid #21262d;padding:.35em .8em}
+#preview-content tr:nth-child(even) td{background:rgba(255,255,255,.02)}
+#preview-content .wl{color:#a78bfa;border-bottom:1px dashed rgba(167,139,250,.5);cursor:pointer}
+#preview-content .wl:hover{color:#c4b5fd;border-bottom-style:solid}
+#preview-content .tag{color:#57ab5a}
+#preview-content .highlight{background:#3d2a00;color:#f0b72f;border-radius:2px;padding:.05em .2em}
+#preview-content .callout{border-radius:6px;padding:.4em .8em;margin:.15em 0;border-left:3px solid;font-size:.93em}
+#preview-content .callout-note{background:rgba(88,166,255,.08);border-color:#58a6ff;color:#cce3ff}
+#preview-content .callout-warning{background:rgba(240,183,47,.08);border-color:#f0b72f;color:#fde68a}
+#preview-content .callout-danger{background:rgba(248,81,73,.08);border-color:#f85149;color:#fca5a5}
+#preview-content .callout-tip{background:rgba(87,171,90,.08);border-color:#57ab5a;color:#bbf7d0}
+#preview-content .callout-important{background:rgba(167,139,250,.1);border-color:#a78bfa;color:#ddd6fe}
+#preview-content .math-block{overflow-x:auto;padding:.4em 0;text-align:center}
+#preview-content .mermaid-wrap{background:#0f1318;border:1px solid #30363d;border-radius:6px;padding:12px;margin:.2em 0;text-align:center}
+
+/* ── Pane resizer ── */
+#pane-resizer{transition:background .15s}
+#pane-resizer.dragging{background:#7c3aed!important}
+
+/* ── Sync status bar ── */
+#sync-status-bar{font-size:11px}
+
+/* ── Commits modal list ── */
+.commit-item{border:1px solid #21262d;border-radius:6px;padding:8px 10px;cursor:pointer;transition:background .1s}
+.commit-item:hover{background:#21262d;border-color:#30363d}
+.commit-item .cm-sha{font-family:monospace;font-size:10px;color:#7c3aed}
+.commit-item .cm-msg{font-size:12px;color:#c9d1d9;margin:2px 0}
+.commit-item .cm-meta{font-size:10px;color:#6e7681}
+
+#editor-pane{flex:1;min-width:0;display:flex;flex-direction:column;overflow:hidden}
+#preview-pane{flex:1;min-width:0;overflow-y:auto;border-left:1px solid #21262d;background:#0d1117}
+#preview-pane::-webkit-scrollbar{width:4px}
+#preview-pane::-webkit-scrollbar-thumb{background:#30363d;border-radius:2px}
+
 /* drag-drop move indicator */
 .tree-file.drag-source,.tree-dir.drag-source{opacity:.4}
 /* move ctx button */
@@ -257,10 +337,23 @@ input:focus,textarea:focus{outline:none}
   </div>
   <div class="flex items-center gap-2">
     <span id="repo-label" class="text-xs text-[#8b949e] hidden"></span>
-    <button id="btn-settings" class="text-[#8b949e] hover:text-[#e6edf3] p-1 rounded" title="Settings">
-      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 15a3 3 0 100-6 3 3 0 000 6z"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
-    </button>
-  </div>
+    <div class="flex items-center gap-1">
+      <div id="view-mode-switcher" class="flex items-center bg-[#0d1117] border border-[#30363d] rounded px-1 gap-0.5">
+        <button id="btn-view-split" class="view-btn active" title="Split view">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 00-2 2v14a2 2 0 002 2h3M16 3h3a2 2 0 012 2v14a2 2 0 01-2 2h-3"/></svg>
+        </button>
+        <button id="btn-view-webvim" class="view-btn" title="WebVim editor">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h12"/></svg>
+        </button>
+        <button id="btn-view-preview" class="view-btn" title="Preview only">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+        </button>
+      </div>
+      <button id="btn-settings" class="text-[#8b949e] hover:text-[#e6edf3] p-1 rounded" title="Settings">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 15a3 3 0 100-6 3 3 0 000 6z"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+      </button>
+    </div><!-- /flex items-center gap-1 -->
+  </div><!-- /flex items-center gap-2 -->
 </header>
 
 <main class="flex flex-1 overflow-hidden relative">
@@ -343,9 +436,27 @@ input:focus,textarea:focus{outline:none}
         <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 4v6h6"/><path d="M23 20v-6h-6"/><path d="M20.49 9A9 9 0 005.64 5.64L1 10M23 14l-4.64 4.36A9 9 0 013.51 15"/></svg>Re-render
       </button>
       <div class="tb-sep"></div>
+      <button id="btn-pull" class="tb-btn" title="Pull latest (Ctrl+Shift+P)">
+        <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/></svg>Pull
+      </button>
+      <div class="tb-sep"></div>
       <button id="btn-sync" class="tb-btn sync-btn" disabled>
         <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/></svg>Sync
       </button>
+    </div>
+
+    <!-- Sync status bar -->
+    <div id="sync-status-bar" class="hidden flex items-center gap-2 px-3 py-1.5 bg-[#0d1117] border-b border-[#30363d] text-[10px] shrink-0">
+      <span id="sync-indicator" class="flex items-center gap-1">
+        <span id="sync-dot" class="w-1.5 h-1.5 rounded-full bg-[#238636] shrink-0"></span>
+        <span id="sync-label" class="text-[#8b949e]">Not connected</span>
+      </span>
+      <span id="sync-remote-badge" class="hidden px-1.5 py-0.5 rounded bg-[#f0b72f22] border border-[#f0b72f66] text-[#f0b72f]">Remote changed</span>
+      <span id="sync-conflict-badge" class="hidden px-1.5 py-0.5 rounded bg-[#f8514922] border border-[#f8514966] text-[#f85149]">Conflict</span>
+      <span id="sync-error-badge" class="hidden px-1.5 py-0.5 rounded bg-[#f8514922] border border-[#f8514966] text-[#f85149]"></span>
+      <div style="flex:1"></div>
+      <span id="sync-last-time" class="text-[#6e7681]"></span>
+      <button id="btn-commits" class="text-[#8b949e] hover:text-[#e6edf3] underline underline-offset-1" title="View recent commits">Commits</button>
     </div>
 
     <!-- Properties panel -->
@@ -360,10 +471,29 @@ input:focus,textarea:focus{outline:none}
       </div>
     </div>
 
-    <!-- Live preview editor -->
-    <div id="editor-wrap">
-      <div id="ed-scroller" tabindex="0"></div>
-      <textarea id="ml-overlay" spellcheck="false" autocomplete="off" aria-hidden="true" tabindex="-1"></textarea>
+    <!-- Split Editor: textarea | preview -->
+    <div id="editor-wrap" class="flex flex-1 overflow-hidden">
+      <!-- Editor pane -->
+      <div id="editor-pane" class="flex flex-col overflow-hidden" style="flex:1;min-width:0">
+        <textarea id="main-editor"
+          spellcheck="true"
+          autocomplete="off"
+          autocorrect="off"
+          autocapitalize="off"
+          placeholder="Start writing…"
+          class="flex-1 resize-none bg-[#0d1117] text-[#e6edf3] caret-[#a78bfa] border-0 outline-none p-6 font-mono text-[14px] leading-[1.75] placeholder-[#484f58]"
+          style="font-family:'JetBrains Mono','Fira Code',ui-monospace,monospace;tab-size:2;line-height:1.75"></textarea>
+      </div>
+      <!-- Resizer -->
+      <div id="pane-resizer" class="w-1 bg-[#30363d] hover:bg-[#7c3aed] cursor-col-resize flex-shrink-0 transition-colors relative z-10">
+        <div class="absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 w-2 h-8 rounded bg-[#30363d] hover:bg-[#7c3aed] transition-colors flex items-center justify-center">
+          <svg class="w-3 h-3 text-[#6e7681]" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5h2v14H8zM14 5h2v14h-2z"/></svg>
+        </div>
+      </div>
+      <!-- Preview pane -->
+      <div id="preview-pane" class="overflow-y-auto bg-[#0d1117]" style="flex:1;min-width:0;border-left:1px solid #21262d">
+        <div id="preview-content" class="p-6 pt-4" style="max-width:780px"></div>
+      </div>
     </div>
 
     <!-- Image viewer -->
@@ -435,7 +565,7 @@ input:focus,textarea:focus{outline:none}
     <div class="p-4 flex flex-col gap-3">
       <div>
         <label class="text-xs text-[#8b949e] mb-1 block">Personal Access Token</label>
-        <input id="inp-pat" type="password" placeholder="ghp_xxxxxxxxxxxx" class="w-full bg-[#0d1117] border border-[#30363d] rounded-lg px-3 py-2 text-sm text-[#e6edf3]"/>
+        <input id="inp-pat" type="password" placeholder="ghp_••••••" class="w-full bg-[#0d1117] border border-[#30363d] rounded-lg px-3 py-2 text-sm text-[#e6edf3]"/>
         <p class="text-[10px] text-[#8b949e] mt-1">Needs <code class="text-[#7c3aed]">repo</code> scope. Stored in localStorage.</p>
       </div>
       <div class="grid grid-cols-2 gap-3">
@@ -452,23 +582,56 @@ input:focus,textarea:focus{outline:none}
         <label class="text-xs text-[#8b949e] mb-1 block">Branch</label>
         <input id="inp-branch" type="text" placeholder="main" class="w-full bg-[#0d1117] border border-[#30363d] rounded-lg px-3 py-2 text-sm text-[#e6edf3]"/>
       </div>
-      <div>
-        <label class="text-xs text-[#8b949e] mb-1 block">Daily Notes Folder</label>
-        <input id="inp-daily-folder" type="text" placeholder="Daily Notes" class="w-full bg-[#0d1117] border border-[#30363d] rounded-lg px-3 py-2 text-sm text-[#e6edf3]"/>
+      <div class="border-t border-[#30363d] pt-3 mt-1">
+        <p class="text-xs font-semibold text-[#e6edf3] mb-2">Sync Settings</p>
+        <div class="flex items-center gap-3 mb-2">
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input id="inp-auto-sync" type="checkbox" class="accent-[#7c3aed]"/>
+            <span class="text-xs text-[#c9d1d9]">Auto-sync</span>
+          </label>
+          <label class="flex items-center gap-2 cursor-pointer">
+            <span class="text-xs text-[#8b949e]">Interval:</span>
+            <select id="inp-sync-interval" class="bg-[#0d1117] border border-[#30363d] rounded px-2 py-1 text-xs text-[#e6edf3]">
+              <option value="30">30s</option>
+              <option value="60" selected>60s</option>
+              <option value="120">2min</option>
+              <option value="300">5min</option>
+            </select>
+          </label>
+        </div>
+        <div class="flex items-center gap-3 mb-2">
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input id="inp-pull-on-open" type="checkbox" class="accent-[#7c3aed]" checked/>
+            <span class="text-xs text-[#c9d1d9]">Pull on file open</span>
+          </label>
+        </div>
+        <div class="flex items-center gap-3">
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input id="inp-conflict-detect" type="checkbox" class="accent-[#7c3aed]" checked/>
+            <span class="text-xs text-[#c9d1d9]">Conflict detection</span>
+          </label>
+        </div>
       </div>
-      <div>
-        <label class="text-xs text-[#8b949e] mb-1 block">Daily Note Date Format</label>
-        <select id="inp-daily-fmt" class="w-full bg-[#0d1117] border border-[#30363d] rounded-lg px-3 py-2 text-sm text-[#e6edf3]">
-          <option value="YYYY-MM-DD">YYYY-MM-DD</option>
-          <option value="DD-MM-YYYY">DD-MM-YYYY</option>
-          <option value="MM-DD-YYYY">MM-DD-YYYY</option>
-          <option value="YYYY/MM/DD">YYYY/MM/DD</option>
-          <option value="D MMMM YYYY">D MMMM YYYY</option>
-        </select>
-      </div>
-      <div>
-        <label class="text-xs text-[#8b949e] mb-1 block">Daily Note Template</label>
-        <textarea id="inp-daily-template" placeholder="# {{date}}&#10;&#10;## Tasks&#10;&#10;## Notes" rows="3" class="w-full bg-[#0d1117] border border-[#30363d] rounded-lg px-3 py-2 text-sm text-[#e6edf3] font-mono resize-none"></textarea>
+      <div class="border-t border-[#30363d] pt-3 mt-1">
+        <p class="text-xs font-semibold text-[#e6edf3] mb-2">Daily Notes</p>
+        <div class="mb-2">
+          <label class="text-xs text-[#8b949e] mb-1 block">Folder</label>
+          <input id="inp-daily-folder" type="text" placeholder="Daily Notes" class="w-full bg-[#0d1117] border border-[#30363d] rounded-lg px-3 py-2 text-sm text-[#e6edf3]"/>
+        </div>
+        <div class="mb-2">
+          <label class="text-xs text-[#8b949e] mb-1 block">Date Format</label>
+          <select id="inp-daily-fmt" class="w-full bg-[#0d1117] border border-[#30363d] rounded-lg px-3 py-2 text-sm text-[#e6edf3]">
+            <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+            <option value="DD-MM-YYYY">DD-MM-YYYY</option>
+            <option value="MM-DD-YYYY">MM-DD-YYYY</option>
+            <option value="YYYY/MM/DD">YYYY/MM/DD</option>
+            <option value="D MMMM YYYY">D MMMM YYYY</option>
+          </select>
+        </div>
+        <div>
+          <label class="text-xs text-[#8b949e] mb-1 block">Template</label>
+          <textarea id="inp-daily-template" placeholder="# {{date}}&#10;&#10;## Tasks&#10;&#10;## Notes" rows="3" class="w-full bg-[#0d1117] border border-[#30363d] rounded-lg px-3 py-2 text-sm text-[#e6edf3] font-mono resize-none"></textarea>
+        </div>
       </div>
       <button id="btn-save-connect" class="w-full bg-[#7c3aed] hover:bg-[#6d28d9] text-white rounded-lg px-4 py-2 text-sm font-medium flex items-center justify-center gap-2">
         <span id="connect-label">Save &amp; Connect</span>
@@ -510,6 +673,33 @@ input:focus,textarea:focus{outline:none}
   </div>
 </div>
 
+<!-- Commits modal -->
+<div id="commits-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+  <div class="bg-[#161b22] border border-[#30363d] rounded-xl w-full max-w-2xl shadow-2xl flex flex-col max-h-[80vh]">
+    <div class="flex items-center justify-between p-4 border-b border-[#30363d] shrink-0">
+      <div class="flex items-center gap-2">
+        <svg class="w-4 h-4 text-[#7c3aed]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><line x1="1.05" y1="12" x2="7" y2="12"/><line x1="17.01" y1="12" x2="22.96" y2="12"/></svg>
+        <h2 class="font-semibold text-sm">Recent Commits</h2>
+        <span id="commits-repo" class="text-[10px] text-[#8b949e] font-mono"></span>
+      </div>
+      <div class="flex items-center gap-2">
+        <button id="btn-refresh-commits" class="text-[#8b949e] hover:text-[#e6edf3] p-1 rounded" title="Refresh">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+        </button>
+        <button id="btn-close-commits" class="text-[#8b949e] hover:text-[#e6edf3]">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+    </div>
+    <div id="commits-list" class="flex-1 overflow-y-auto p-2 flex flex-col gap-1">
+      <div class="flex items-center justify-center py-8 text-[#8b949e]">
+        <svg class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/></svg>
+        <span class="ml-2 text-xs">Loading commits…</span>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- Autocomplete -->
 <ul id="autocomplete"></ul>
 
@@ -523,11 +713,19 @@ const escA=s=>String(s).replace(/"/g,'&quot;');
 
 // ── state ──
 const S={
-  oct:null,cfg:{},tree:[],sha:{},
-  ed:{path:null,lines:[],orig:'',dirty:false,activeLine:-1,inCodeblock:false},
-  _contentCache:{}
+  oct:null,cfg:{},
+  tree:[],sha:{},
+  ed:{path:null,content:'',orig:'',dirty:false,_saveTimer:null},
+  sync:{interval:null,lastSync:null,remoteChanged:false,error:null},
+  _contentCache:{},
+  _observers:[],
+  _abortController:null
 };
-const LS={P:'obw_pat',O:'obw_owner',R:'obw_repo',B:'obw_branch',D:'obw_daily',DF:'obw_daily_fmt',DT:'obw_daily_tpl'};
+const LS={
+  P:'obw_pat',O:'obw_owner',R:'obw_repo',B:'obw_branch',
+  D:'obw_daily',DF:'obw_daily_fmt',DT:'obw_daily_tpl',
+  AS:'obw_auto_sync',SI:'obw_sync_interval',PO:'obw_pull_open',CD:'obw_conflict_detect'
+};
 const IGNORE=new Set(['.obsidian','.trash','.git']);
 const IMGEXT=/\.(png|jpg|jpeg|gif|webp|svg)$/i;
 const MDEXT=/\.md$/i;
@@ -551,7 +749,11 @@ function loadCfg(){
     branch:localStorage.getItem(LS.B)||'main',
     dailyFolder:localStorage.getItem(LS.D)||'Daily Notes',
     dailyFmt:localStorage.getItem(LS.DF)||'YYYY-MM-DD',
-    dailyTemplate:localStorage.getItem(LS.DT)||'# {{date}}\n\n## Tasks\n\n## Notes\n'
+    dailyTemplate:localStorage.getItem(LS.DT)||'# {{date}}\n\n## Tasks\n\n## Notes\n',
+    autoSync:localStorage.getItem(LS.AS)==='true',
+    syncInterval:parseInt(localStorage.getItem(LS.SI))||60,
+    pullOnOpen:localStorage.getItem(LS.PO)!=='false',
+    conflictDetect:localStorage.getItem(LS.CD)!=='false'
   };
 }
 function saveCfg(c){
@@ -561,6 +763,10 @@ function saveCfg(c){
   localStorage.setItem(LS.D,c.dailyFolder||'Daily Notes');
   if(c.dailyFmt)localStorage.setItem(LS.DF,c.dailyFmt);
   if(c.dailyTemplate!==undefined)localStorage.setItem(LS.DT,c.dailyTemplate);
+  if(c.autoSync!==undefined)localStorage.setItem(LS.AS,c.autoSync);
+  if(c.syncInterval)localStorage.setItem(LS.SI,c.syncInterval);
+  if(c.pullOnOpen!==undefined)localStorage.setItem(LS.PO,c.pullOnOpen);
+  if(c.conflictDetect!==undefined)localStorage.setItem(LS.CD,c.conflictDetect);
 }
 
 // ── git api ──
@@ -729,7 +935,8 @@ function renderLine(raw,lineIndex){
     // separator row
     if(/^\|[\s\-:|]+\|$/.test(raw)){return '<span class="r-table-sep"></span>';}
     const cells=raw.slice(1,-1).split('|').map(c=>c.trim());
-    const isHead=lineIndex>0&&S.ed.lines[lineIndex+1]&&/^\|[\s\-:|]+\|$/.test(S.ed.lines[lineIndex+1]);
+    const lines=(S.ed.content||'').split('\n');
+    const isHead=lineIndex>0&&lines[lineIndex+1]&&/^\|[\s\-:|]+\|$/.test(lines[lineIndex+1]);
     if(isHead){
       return '<span class="r-table-head-row">'+cells.map(c=>'<th class="r-table-th">'+renderInline(esc(c))+'</th>').join('')+'</span>';
     }
@@ -755,7 +962,8 @@ function renderLine(raw,lineIndex){
     }
     // continuation line of previous callout — render as callout body
     if(lineIndex>0){
-      const prev=S.ed.lines[lineIndex-1];
+      const lines=(S.ed.content||'').split('\n');
+      const prev=lines[lineIndex-1];
       if(prev&&(prev.startsWith('> ')||prev==='>'))return '<span class="r-callout-body-line r-quote">'+renderInline(esc(content))+'</span>';
     }
     return '<span class="r-quote">'+renderInline(esc(content))+'</span>';
@@ -823,6 +1031,165 @@ function parseFrontmatter(text){
   return{props,bodyStart:end+1};
 }
 
+// ── Full-content preview renderer ──
+function renderPreview(text){
+  const pc=$('preview-content');
+  if(!pc)return;
+  const lines=text.split('\n');
+
+  let inCodeblock=false,inMathBlock=false,cbLang='',cbLines=[],cbStartEl=null;
+  const out=[];
+  let tableBuffer=[];
+  const flushTable=()=>{
+    if(!tableBuffer.length)return;
+    const rows=tableBuffer.map(b=>{
+      if(/^\|[\s\-:|]+\|$/.test(b))return null;
+      const cells=b.slice(1,-1).split('|').map(c=>c.trim());
+      const isHead=tableBuffer.some((r2,i2)=>i2>0&&/^\|[\s\-:|]+\|$/.test(r2));
+      if(isHead){
+        return '<tr>'+cells.map(c=>'<th>'+renderInline(esc(c))+'</th>').join('')+'</tr>';
+      }
+      return '<tr>'+cells.map(c=>'<td>'+renderInline(esc(c))+'</td>').join('')+'</tr>';
+    }).filter(Boolean);
+    if(rows.length){
+      out.push('<table class="r-table"><tbody>'+rows.join('')+'</tbody></table>');
+    }
+    tableBuffer=[];
+  };
+
+  lines.forEach((raw,i)=>{
+    // table detection
+    if(raw.startsWith('|')&&raw.endsWith('|')){
+      tableBuffer.push(raw);
+      return;
+    } else if(tableBuffer.length){
+      flushTable();
+    }
+
+    // frontmatter
+    if(raw==='---'){
+      if(!inMathBlock&&!inCodeblock){out.push('<hr class="r-fm-delim"/>');return;}
+    }
+
+    // hr
+    if(/^[-*_]{3,}$/.test(raw.trim())&&!raw.match(/^\s*[-*] /)){
+      out.push('<hr class="r-hr"/>');return;
+    }
+
+    // math $$
+    if(raw.startsWith('$$')&&!inCodeblock){
+      if(inMathBlock){
+        inMathBlock=false;
+        out.push('<span class="r-math-block">'+esc(cbLines.join('\n').slice(0,-2))+'</span>');
+        cbLines=[];
+      } else {
+        inMathBlock=true;cbLines=[raw.slice(2)];
+      }
+      return;
+    }
+    if(inMathBlock){
+      if(raw.endsWith('$$')&&raw.length>2){inMathBlock=false;cbLines.push(raw.slice(0,-2));out.push('<span class="r-math-block">'+esc(cbLines.join('\n'))+'</span>');cbLines=[];}
+      else cbLines.push(raw);
+      return;
+    }
+
+    // code blocks ```
+    const cbMatch=raw.match(/^```(\w*)$/);
+    if(cbMatch&&!inCodeblock){
+      inCodeblock=true;cbLang=cbMatch[1];cbLines=[];return;
+    }
+    if(raw==='```'&&inCodeblock){
+      inCodeblock=false;
+      const lang=cbLang.toLowerCase();
+      if(lang==='mermaid'){
+        const id='mermaid-'+Date.now();
+        out.push('<div class="mermaid-wrap" id="'+id+'" data-src="'+escA(cbLines.join('\n'))+'">Loading diagram…</div>');
+      } else if(lang==='math'||lang==='katex'){
+        out.push('<span class="math-block">'+esc(cbLines.join('\n'))+'</span>');
+      } else {
+        out.push('<pre><code class="lang-'+esc(cbLang)+'">'+esc(cbLines.join('\n'))+'</code></pre>');
+      }
+      cbLines=[];cbLang='';return;
+    }
+    if(inCodeblock){cbLines.push(raw);return;}
+
+    // headings
+    const hm=raw.match(/^(#{1,6}) (.+)$/);
+    if(hm){out.push('<h'+hm[1].length+'>'+renderInline(esc(hm[2]))+'</h'+hm[1].length+'>');return;}
+
+    // callouts > [!type]
+    if(raw.startsWith('> ')||raw==='>'){
+      const content=raw.startsWith('> ')?raw.slice(2):raw.slice(1);
+      const calloutM=content.match(/^\[!(\w+)(\+|-)?\](.*)$/i);
+      if(calloutM){
+        const type=calloutM[1].toLowerCase();
+        const foldable=calloutM[2]==='+'||calloutM[2]==='-';
+        const foldClass=calloutM[2]==='-'?' folded':'';
+        const icons={note:'📝',warning:'⚠️',danger:'🚨',error:'🚨',tip:'💡',hint:'💡',important:'❗',info:'ℹ️',success:'✅',question:'❓',bug:'🐛',quote:'💬',example:'📖',abstract:'📋',summary:'📋',tldr:'📋',todo:'✅'};
+        const icon=icons[type]||'📌';
+        const validTypes=['note','warning','danger','error','tip','hint','important','info','success','question','bug','quote','example','abstract','summary','tldr','todo'];
+        const cls=validTypes.includes(type)?type:'note';
+        out.push('<div class="callout callout-'+cls+foldClass+'">'+(foldable?'<span class="r-callout-fold-icon">▾</span>':'')+'<span class="r-callout-head">'+icon+' '+esc(calloutM[3].trim()||type.charAt(0).toUpperCase()+type.slice(1))+'</span></div>');
+        return;
+      }
+      out.push('<blockquote>'+renderInline(esc(content))+'</blockquote>');return;
+    }
+
+    // footnote def
+    const fnDef=raw.match(/^\[\^([^\]]+)\]:\s*(.+)$/);
+    if(fnDef){out.push('<div class="r-fn-def"><span class="r-fn-label">[^'+esc(fnDef[1])+']</span> '+renderInline(esc(fnDef[2]))+'</div>');return;}
+
+    // task list
+    const task=raw.match(/^(\s*)([-*]) \[([ xX])\] (.+)$/);
+    if(task){
+      const done=task[3].toLowerCase()==='x';
+      out.push('<div class="r-todo-wrap"><input type="checkbox" '+(done?'checked':'')+' disabled/><span class="'+(done?'done':'')+'">'+renderInline(esc(task[4]))+'</span></div>');return;
+    }
+
+    // ul
+    const ul=raw.match(/^(\s*)([-*+]) (.+)$/);
+    if(ul){const lvl=Math.floor(ul[1].length/2);out.push('<div class="r-ul-wrap" style="padding-left:'+(lvl*1.4)+'em"><span class="r-ul-bullet">•</span> '+renderInline(esc(ul[3]))+'</div>');return;}
+
+    // ol
+    const ol=raw.match(/^(\s*)(\d+)\. (.+)$/);
+    if(ol){const lvl=Math.floor(ol[1].length/2);out.push('<div class="r-ol-wrap" style="padding-left:'+(lvl*1.4)+'em"><span class="r-ol-num">'+ol[2]+'.</span> '+renderInline(esc(ol[3]))+'</div>');return;}
+
+    // empty
+    if(raw.trim()===''){out.push('<br/>');return;}
+
+    // normal
+    out.push('<p>'+renderInline(esc(raw))+'</p>');
+  });
+
+  if(tableBuffer.length)flushTable();
+
+  pc.innerHTML=out.join('\n');
+
+  // Mermaid rendering
+  if(window.mermaid){
+    pc.querySelectorAll('.mermaid-wrap').forEach(el=>{
+      const src=el.dataset.src;
+      const id='mermaid-'+Date.now();
+      el.id=id;
+      mermaid.initialize({startOnLoad:false,theme:'dark',themeVariables:{primaryColor:'#7c3aed',primaryTextColor:'#e6edf3',lineColor:'#30363d',background:'#0f1318'}});
+      mermaid.render(id+'r',src).then(({svg})=>{el.innerHTML=svg;}).catch(e=>{el.innerHTML='<span style="color:#f85149;font-size:11px">Diagram error: '+esc(e.message||'')+'</span>';});
+    });
+  }
+
+  // KaTeX
+  if(window._katexReady&&window.renderMathInElement){
+    try{
+      renderMathInElement(pc,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}],throwOnError:false});
+    }catch(e){}
+  }
+
+  // Clickable wikilinks in preview
+  pc.querySelectorAll('.wl').forEach(l=>{
+    l.style.cursor='pointer';
+    l.addEventListener('click',()=>openFileByName(l.dataset.wl));
+  });
+}
+
 function serializeFrontmatter(props){
   const keys=Object.keys(props);
   if(!keys.length)return'';
@@ -863,7 +1230,9 @@ function pushPropsToEditor(){
   const {bodyStart}=parseFrontmatter(raw);
   const body=raw.split('\n').slice(bodyStart).join('\n');
   const newText=serializeFrontmatter(props)+body;
-  loadEditor(newText,true);
+  const me=$('main-editor');
+  if(me)me.value=newText;
+  S.ed.content=newText;
   setDirty(newText!==S.ed.orig);
 }
 
@@ -893,7 +1262,6 @@ $('btn-props').addEventListener('click',()=>{
 });
 
 // ── Line-based editor ──
-const elScroller=$('ed-scroller');
 const elPath=$('editor-path');
 const elDirty=$('dirty-dot');
 const elSync=$('btn-sync');
@@ -904,7 +1272,10 @@ const elImgViewer=$('img-viewer');
 
 const setDirty=d=>{S.ed.dirty=d;elDirty.classList.toggle('hidden',!d);elSync.disabled=!d;};
 
-function getEditorText(){return S.ed.lines.join('\n');}
+function getEditorText(){
+  const me=$('main-editor');
+  return me?me.value:'';
+}
 
 // create a line DOM element
 function makeLine(raw,idx){
@@ -934,39 +1305,27 @@ function renderLineEl(el,raw){
   r.innerHTML=renderLine(raw,parseInt(el.dataset.idx));
 }
 
-let inCodeblock=false;
-function loadEditor(text,preserveActive=false){
-  const prevActive=preserveActive?S.ed.activeLine:-1;
-  S.ed.lines=text.split('\n');
-  inCodeblock=false;
-  elScroller.innerHTML='';
-  S.ed.lines.forEach((raw,i)=>{
-    const el=makeLine(raw,i);
-    if(raw.startsWith('```')){
-      el.classList.toggle('in-codeblock',inCodeblock);
-      inCodeblock=!inCodeblock;
-    } else {
-      el.classList.toggle('in-codeblock',inCodeblock);
-    }
-    renderLineEl(el,raw);
-    elScroller.appendChild(el);
-  });
-  // restore or clear active
-  S.ed.activeLine=-1;
-  if(prevActive>=0&&prevActive<S.ed.lines.length)activateLine(prevActive,0,false);
+function loadEditor(text){
+  S.ed.content=text;
+  S.ed.orig=text;
+  S._contentCache[S.ed.path]=text;
+  const me=$('main-editor');
+  if(!me)return;
+  me.value=text;
+  me.style.height='auto';
+  me.style.height=Math.max(me.scrollHeight,200)+'px';
   updateWC();
+  renderPreview(text);
   syncMLOverlay();
-  postRender();
 }
 
-// Post-render: merge table rows, run KaTeX, run Mermaid
+// Post-render: KaTeX math in preview, Mermaid diagrams
 function postRender(){
-  // Tables: merge consecutive table rows into <table> elements
-  mergeTables();
-  // KaTeX math
-  if(window._katexReady&&window.renderMathInElement){
+  // KaTeX math in preview pane
+  const pc=$('preview-content');
+  if(window._katexReady&&window.renderMathInElement&&pc){
     try{
-      renderMathInElement(elScroller,{
+      renderMathInElement(pc,{
         delimiters:[
           {left:'$$',right:'$$',display:true},
           {left:'$',right:'$',display:false}
@@ -975,13 +1334,8 @@ function postRender(){
       });
     }catch(e){}
   }
-  // Mermaid
+  // Mermaid diagrams
   renderMermaidBlocks();
-  // Foldable callouts
-  elScroller.querySelectorAll('.r-callout-foldable').forEach(el=>{
-    el.removeEventListener('click',onCalloutFold);
-    el.addEventListener('click',onCalloutFold);
-  });
 }
 
 function onCalloutFold(e){
@@ -989,464 +1343,340 @@ function onCalloutFold(e){
   el.classList.toggle('folded');
 }
 
-function mergeTables(){
-  // Find all table-head-row and table-row spans, group into actual <table>
-  const lines=[...elScroller.querySelectorAll('.ed-line')];
-  let tableStart=-1,tableEls=[];
-  const flush=()=>{
-    if(!tableEls.length)return;
-    // Build table HTML
-    const wrap=document.createElement('div');
-    wrap.className='r-table-wrap';
-    const tbl=document.createElement('table');
-    tbl.className='r-table';
-    let inHead=false;
-    let tbody=document.createElement('tbody');
-    let thead=document.createElement('thead');
-    tableEls.forEach((lineEl,i)=>{
-      const r=lineEl.querySelector('.r');
-      if(!r)return;
-      const headRow=r.querySelector('.r-table-head-row');
-      const row=r.querySelector('.r-table-row');
-      const sep=r.querySelector('.r-table-sep');
-      if(headRow){
-        const tr=document.createElement('tr');
-        headRow.querySelectorAll('.r-table-th').forEach(th=>{
-          const t=document.createElement('th');
-          t.className='r-table-th';
-          t.innerHTML=th.innerHTML;
-          tr.appendChild(t);
-        });
-        thead.appendChild(tr);
-        lineEl.style.display='none';
-      } else if(sep){
-        lineEl.style.display='none';
-      } else if(row){
-        const tr=document.createElement('tr');
-        row.querySelectorAll('.r-table-td').forEach(td=>{
-          const t=document.createElement('td');
-          t.className='r-table-td';
-          t.innerHTML=td.innerHTML;
-          tr.appendChild(t);
-        });
-        tbody.appendChild(tr);
-        lineEl.style.display='none';
-      }
-    });
-    if(thead.children.length)tbl.appendChild(thead);
-    if(tbody.children.length)tbl.appendChild(tbody);
-    wrap.appendChild(tbl);
-    // Insert before first hidden line
-    const anchor=tableEls[0];
-    // Create a non-ed-line wrapper
-    const container=document.createElement('div');
-    container.className='r-table-container';
-    container.appendChild(wrap);
-    anchor.parentNode.insertBefore(container,anchor);
-    tableEls=[];tableStart=-1;
-  };
-  lines.forEach((lineEl,i)=>{
-    const r=lineEl.querySelector('.r');
-    if(!r){flush();return;}
-    const hasTablePart=r.querySelector('.r-table-head-row,.r-table-row,.r-table-sep');
-    if(hasTablePart){
-      tableEls.push(lineEl);
-    } else {
-      flush();
+// ── notify save (observer-like interrupt) ──
+// fires after 1.5s of inactivity — clears previous if new input arrives
+let _saveTimer=null;
+function notifySave(){
+  // Interrupt: clear any pending save
+  if(_saveTimer)clearTimeout(_saveTimer);
+  _saveTimer=setTimeout(()=>{
+    _saveTimer=null;
+    // The actual save is driven by syncFile() called via Ctrl+S or toolbar Sync
+    // Auto-save to localStorage as a safety net
+    if(S.ed.dirty&&S.ed.path){
+      localStorage.setItem('obw_backup_'+S.ed.path,S.ed.content);
+      setSyncStatus('local backup saved',false);
     }
-  });
-  flush();
+  },3000);
+}
+
+function mergeTables(){
+  // No-op: tables are already rendered as proper <table> elements in #preview-content by renderPreview()
 }
 
 function renderMermaidBlocks(){
-  // Find code blocks with lang=mermaid
-  let inCB=false,cbLang='',cbLines=[],cbStartEl=null;
-  const lineEls=[...elScroller.querySelectorAll('.ed-line')];
-  lineEls.forEach(el=>{
-    const raw=S.ed.lines[parseInt(el.dataset.idx)];
-    if(raw===undefined)return;
-    if(!inCB&&raw.match(/^```(\w+)/)){
-      const lang=raw.match(/^```(\w+)/)[1].toLowerCase();
-      if(lang==='mermaid'){inCB=true;cbLang='mermaid';cbLines=[];cbStartEl=el;el.style.display='none';}
-      return;
-    }
-    if(inCB){
-      if(raw==='```'){
-        inCB=false;
-        // render
-        el.style.display='none';
-        const wrap=document.createElement('div');
-        wrap.className='r-mermaid-wrap';
-        wrap.dataset.mermaidSrc=cbLines.join('\n');
-        const id='mermaid-'+Date.now()+'-'+Math.random().toString(36).slice(2);
-        wrap.innerHTML='<div id="'+id+'">Loading diagram…</div>';
-        cbStartEl.parentNode.insertBefore(wrap,cbStartEl);
-        if(window.mermaid){
-          mermaid.initialize({startOnLoad:false,theme:'dark',themeVariables:{primaryColor:'#7c3aed',primaryTextColor:'#e6edf3',lineColor:'#30363d',background:'#0f1318'}});
-          mermaid.render(id+'r',cbLines.join('\n')).then(({svg})=>{wrap.innerHTML=svg;}).catch(e=>{wrap.innerHTML='<span style="color:#f85149;font-size:11px">Diagram error: '+esc(e.message||'')+'</span>';});
-        }
-        cbLines=[];cbLang='';cbStartEl=null;
-      } else {
-        cbLines.push(raw);
-        el.style.display='none';
-      }
-    }
+  // Render mermaid diagrams in preview pane via data-src attributes
+  const pc=$('preview-content');
+  if(!pc||!window.mermaid)return;
+  pc.querySelectorAll('.mermaid-wrap').forEach(wrap=>{
+    const src=wrap.dataset.src||wrap.getAttribute('data-src')||wrap.textContent;
+    if(!src||wrap.dataset.rendered)return;
+    wrap.dataset.rendered='1';
+    const id='mermaid-'+Date.now()+'-'+Math.random().toString(36).slice(2);
+    wrap.innerHTML='<div id="'+id+'">Loading diagram…</div>';
+    mermaid.initialize({startOnLoad:false,theme:'dark',themeVariables:{primaryColor:'#7c3aed',primaryTextColor:'#e6edf3',lineColor:'#30363d',background:'#0f1318'}});
+    mermaid.render(id+'r',src).then(({svg})=>{wrap.innerHTML=svg;}).catch(e=>{wrap.innerHTML='<span style="color:#f85149;font-size:11px">Diagram error: '+esc(e.message||'')+'</span>';});
   });
 }
 
 function activateLine(idx,cursorPos=-1,focus=true){
-  if(idx===S.ed.activeLine)return;
-  // deactivate previous
-  if(S.ed.activeLine>=0){
-    const prev=elScroller.querySelector('[data-idx="'+S.ed.activeLine+'"]');
-    if(prev){
-      const ta=prev.querySelector('textarea');
-      S.ed.lines[S.ed.activeLine]=ta.value;
-      prev.classList.remove('active-line');
-      rebuildCodeblockFlags();
-      renderLineEl(prev,ta.value);
-      // restore line height
-      prev.style.minHeight='';
-      // re-run postRender for math/tables/etc (debounced)
-      clearTimeout(window._prDebounce);
-      window._prDebounce=setTimeout(postRender,200);
-    }
-  }
+  // Single-textarea mode: track active line index for compatibility
+  if(me) S.ed.lines=me.value.split('\n');
   S.ed.activeLine=idx;
-  const el=elScroller.querySelector('[data-idx="'+idx+'"]');
-  if(!el)return;
-  el.classList.add('active-line');
-  const ta=el.querySelector('textarea');
-  ta.value=S.ed.lines[idx];
-  // Sync height BEFORE showing (prevents jump)
-  ta.style.height='auto';
-  ta.style.height=Math.max(ta.scrollHeight,28)+'px';
-  el.style.minHeight=ta.style.height;
-  if(focus){
-    ta.focus();
-    if(cursorPos>=0){ta.selectionStart=ta.selectionEnd=Math.min(cursorPos,ta.value.length);}
-    else{ta.selectionStart=ta.selectionEnd=ta.value.length;}
-  }
 }
 
 function rebuildCodeblockFlags(){
-  let cb=false;
-  elScroller.querySelectorAll('.ed-line').forEach(el=>{
-    const raw=S.ed.lines[parseInt(el.dataset.idx)];
-    if(raw&&raw.startsWith('```')){
-      el.classList.toggle('in-codeblock',cb);
-      cb=!cb;
-    } else {
-      el.classList.toggle('in-codeblock',cb);
-    }
-  });
-}
-
-function autoResizeTA(ta){
-  ta.style.height='auto';
-  const h=Math.max(ta.scrollHeight,28);
-  ta.style.height=h+'px';
-  const line=ta.closest('.ed-line');
-  if(line)line.style.minHeight=h+'px';
+  // No-op: per-line codeblock flags no longer needed with textarea editor
+  // (codeblock syntax detection is handled in renderPreview)
 }
 
 function spliceLines(start,deleteCount,...newLines){
-  S.ed.lines.splice(start,deleteCount,...newLines);
-  // rebuild DOM
-  const allEls=[...elScroller.querySelectorAll('.ed-line')];
-  // remove deleted
-  for(let i=0;i<deleteCount;i++){const el=allEls[start+i];if(el)el.remove();}
-  // insert new
-  const refEl=elScroller.querySelectorAll('.ed-line')[start]||null;
-  let cb=false;
-  // recompute from 0
-  elScroller.querySelectorAll('.ed-line').forEach(el=>{
-    const idx=parseInt(el.dataset.idx);
-    if(S.ed.lines[idx]&&S.ed.lines[idx].startsWith('```')){el.classList.toggle('in-codeblock',cb);cb=!cb;}
-    else el.classList.toggle('in-codeblock',cb);
-  });
-  newLines.forEach((raw,j)=>{
-    const newEl=makeLine(raw,start+j);
-    renderLineEl(newEl,raw);
-    if(refEl)elScroller.insertBefore(newEl,refEl);
-    else elScroller.appendChild(newEl);
-  });
-  // re-index all elements
-  elScroller.querySelectorAll('.ed-line').forEach((el,i)=>{el.dataset.idx=i;});
-  rebuildCodeblockFlags();
+  // For compatibility — sync from main editor text
+  if(me){
+    S.ed.content=me.value;
+    S.ed.lines=me.value.split('\n');
+  }
 }
 
-// ── Editor events ──
+// auto-resize textarea to content
+function autoResizeTA(ta){
+  if(!ta)return;
+  ta.style.height='auto';
+  ta.style.height=Math.max(ta.scrollHeight,28)+'px';
+}
 
-// click on scroller = activate line with cursor at click position
-elScroller.addEventListener('mousedown',e=>{
-  const line=e.target.closest('.ed-line');
-  if(!line)return;
-  // Don't steal from wikilink/checkbox clicks
-  if(e.target.closest('[data-wl]')||e.target.closest('[data-toggle]'))return;
-  const idx=parseInt(line.dataset.idx);
-  if(idx!==S.ed.activeLine){
-    const clickX=e.clientX,clickY=e.clientY;
-    activateLine(idx,-1,false);
-    requestAnimationFrame(()=>{
-      const ta2=line.querySelector('textarea');
-      if(!ta2)return;
-      ta2.focus();
-      // Accurate cursor position using browser caret detection
-      let pos=ta2.value.length;
-      try{
-        // Standard (Firefox)
-        if(document.caretPositionFromPoint){
-          const cp=document.caretPositionFromPoint(clickX,clickY);
-          if(cp)pos=Math.min(cp.offset,ta2.value.length);
-        } else if(document.caretRangeFromPoint){
-          // Chrome/Safari — measure char width heuristic since textarea range doesn't map directly
-          const lineRect=line.getBoundingClientRect();
-          const relX=clickX-lineRect.left;
-          // Sample char width from canvas
-          const cv=document.createElement('canvas');
-          const ctx2=cv.getContext('2d');
-          const style=getComputedStyle(ta2);
-          ctx2.font=style.fontSize+' '+style.fontFamily;
-          const txt=ta2.value;
-          let bestPos=0,bestDist=Infinity;
-          for(let i=0;i<=txt.length;i++){
-            const w=ctx2.measureText(txt.slice(0,i)).width;
-            const d=Math.abs(w-relX);
-            if(d<bestDist){bestDist=d;bestPos=i;}
-          }
-          pos=bestPos;
-        }
-      }catch(ex){pos=ta2.value.length;}
-      ta2.selectionStart=ta2.selectionEnd=Math.max(0,Math.min(pos,ta2.value.length));
-    });
-  }
-});
-
-elScroller.addEventListener('click',e=>{
-  // wikilink click on rendered (non-active) line
-  const wl=e.target.closest('[data-wl]');
-  if(wl){e.stopPropagation();openFileByName(wl.dataset.wl);return;}
-  // checkbox toggle
-  const cb=e.target.closest('[data-toggle]');
-  if(cb){
-    const li=parseInt(cb.dataset.toggle);
-    const raw=S.ed.lines[li];
-    const done=/\[x\]/i.test(raw);
-    S.ed.lines[li]=done?raw.replace(/\[x\]/i,'[ ]'):raw.replace(/\[ \]/,'[x]');
-    const el=elScroller.querySelector('[data-idx="'+li+'"]');
-    if(el){renderLineEl(el,S.ed.lines[li]);}
-    setDirty(getEditorText()!==S.ed.orig);
-    return;
-  }
-});
-
-// textarea events per-line (event delegation on scroller)
-elScroller.addEventListener('input',e=>{
-  const ta=e.target;
-  if(ta.tagName!=='TEXTAREA')return;
-  const el=ta.closest('.ed-line');
-  const idx=parseInt(el.dataset.idx);
-  S.ed.lines[idx]=ta.value;
-  autoResizeTA(ta);
-  setDirty(getEditorText()!==S.ed.orig);
+// ── Editor events (textarea-based) ──
+// Textarea input: track dirty, live-preview
+me.addEventListener('input',()=>{
+  const text=me.value;
+  S.ed.content=text;
+  setDirty(text!==S.ed.orig);
   updateWC();
-  syncMLOverlay();
-  // wikilink autocomplete
-  triggerAutocomplete(ta,idx);
+  renderPreview(text);
+  // debounced auto-save interrupt
+  clearTimeout(_saveTimer);
+  _saveTimer=setTimeout(notifySave,1500);
 });
 
-elScroller.addEventListener('keydown',e=>{
-  const ta=e.target;
-  if(ta.tagName!=='TEXTAREA')return;
-  const el=ta.closest('.ed-line');
-  const idx=parseInt(el.dataset.idx);
-
-  if(e.key==='Enter'&&!e.shiftKey&&!acOpen()){
-    e.preventDefault();
-    const raw=ta.value;
-    const cur=ta.selectionStart;
-    const before=raw.slice(0,cur);
-    const after=raw.slice(cur);
-
-    // auto-continue lists
-    let prefix='';
-    const ulm=before.match(/^(\s*)([-*+] )(?!\[)(.*)$/);
-    const olm=before.match(/^(\s*)(\d+)\. (.*)$/);
-    const tom=before.match(/^(\s*)([-*] \[[ x]\] )(.*)$/i);
-    if(tom&&tom[3].trim()){prefix=tom[1]+'- [ ] ';}
-    else if(tom){// empty task: remove list
-      S.ed.lines[idx]=before.replace(/^(\s*)([-*] \[[ x]\] )$/,'');
-      ta.value=S.ed.lines[idx];
-      renderLineEl(el,ta.value);
-      spliceLines(idx+1,0,'');
-      S.ed.activeLine=-1;
-      activateLine(idx+1,0);
-      return;
-    }
-    else if(ulm&&ulm[3].trim()){prefix=ulm[1]+ulm[2];}
-    else if(ulm){// empty bullet: remove
-      S.ed.lines[idx]='';ta.value='';renderLineEl(el,'');
-      spliceLines(idx+1,0,'');
-      S.ed.activeLine=-1;activateLine(idx+1,0);return;
-    }
-    else if(olm&&olm[3].trim()){prefix=olm[1]+(parseInt(olm[2])+1)+'. ';}
-    else if(olm){S.ed.lines[idx]='';ta.value='';renderLineEl(el,'');
-      spliceLines(idx+1,0,'');S.ed.activeLine=-1;activateLine(idx+1,0);return;}
-
-    // commit current line
-    S.ed.lines[idx]=before;
-    ta.value=before;
-    renderLineEl(el,before);
-    autoResizeTA(ta);
-    // insert new line
-    const newRaw=prefix+after;
-    spliceLines(idx+1,0,newRaw);
-    S.ed.activeLine=-1;
-    activateLine(idx+1,prefix.length);
-    setDirty(true);return;
-  }
-
-  if(e.key==='Backspace'&&!acOpen()){
-    if(ta.selectionStart===0&&ta.selectionEnd===0&&idx>0){
-      e.preventDefault();
-      const prevRaw=S.ed.lines[idx-1];
-      const curRaw=ta.value;
-      spliceLines(idx,1);
-      S.ed.activeLine=-1;
-      const prevEl=elScroller.querySelector('[data-idx="'+(idx-1)+'"]');
-      S.ed.lines[idx-1]=prevRaw+curRaw;
-      if(prevEl){const pt=prevEl.querySelector('textarea');pt.value=S.ed.lines[idx-1];autoResizeTA(pt);}
-      activateLine(idx-1,prevRaw.length);
-      setDirty(true);return;
-    }
-  }
-
-  if(e.key==='ArrowUp'&&ta.selectionStart===0&&!acOpen()){
-    if(idx>0){e.preventDefault();activateLine(idx-1,-1);}
-    return;
-  }
-  if(e.key==='ArrowDown'){
-    const atEnd=ta.selectionStart===ta.value.length;
-    if(atEnd&&idx<S.ed.lines.length-1&&!acOpen()){e.preventDefault();activateLine(idx+1,0);}
-    return;
-  }
-
+// Tab key in textarea
+me.addEventListener('keydown',e=>{
   if(e.key==='Tab'){
     e.preventDefault();
-    const s=ta.selectionStart,en=ta.selectionEnd;
-    if(e.shiftKey){
-      // un-indent
-      if(ta.value.startsWith('  ')){ta.value=ta.value.slice(2);S.ed.lines[idx]=ta.value;ta.selectionStart=ta.selectionEnd=Math.max(0,s-2);}
-    } else {
-      ta.value=ta.value.slice(0,s)+'  '+ta.value.slice(en);
-      ta.selectionStart=ta.selectionEnd=s+2;
-      S.ed.lines[idx]=ta.value;
-    }
-    renderLineEl(el,ta.value);autoResizeTA(ta);setDirty(true);return;
+    const s=me.selectionStart,en=me.selectionEnd;
+    me.value=me.value.slice(0,s)+'  '+me.value.slice(en);
+    me.selectionStart=me.selectionEnd=s+2;
+    S.ed.content=me.value;
+    setDirty(me.value!==S.ed.orig);
   }
-
-  // autocomplete navigation
-  if(acOpen()){
-    if(e.key==='ArrowDown'){e.preventDefault();acMove(1);return;}
-    if(e.key==='ArrowUp'){e.preventDefault();acMove(-1);return;}
-    if(e.key==='Enter'||e.key==='Tab'){e.preventDefault();acConfirm(ta,idx);return;}
-    if(e.key==='Escape'){hideAC();return;}
+  if((e.ctrlKey||e.metaKey)&&e.key==='s'){
+    e.preventDefault();syncFile();return;
   }
-
-  // keyboard shortcuts
-  if((e.ctrlKey||e.metaKey)&&!e.shiftKey){
-    if(e.key==='b'){e.preventDefault();applyFmtLine(ta,idx,'bold');return;}
-    if(e.key==='i'){e.preventDefault();applyFmtLine(ta,idx,'italic');return;}
-    if(e.key==='s'){e.preventDefault();syncFile();return;}
-    if(e.key==='k'){e.preventDefault();applyFmtLine(ta,idx,'link');return;}
+  if((e.ctrlKey||e.metaKey)&&e.key==='b'){
+    e.preventDefault();applyFmtSel('bold');return;
+  }
+  if((e.ctrlKey||e.metaKey)&&e.key==='i'){
+    e.preventDefault();applyFmtSel('italic');return;
+  }
+  if((e.ctrlKey||e.metaKey)&&e.key==='k'){
+    e.preventDefault();applyFmtSel('link');return;
   }
 });
 
-// focus line on textarea focus
-elScroller.addEventListener('focusin',e=>{
-  const ta=e.target;
-  if(ta.tagName!=='TEXTAREA')return;
-  const el=ta.closest('.ed-line');
-  const idx=parseInt(el.dataset.idx);
-  if(idx!==S.ed.activeLine)activateLine(idx,-1,false);
-});
-
-// deactivate line when focus leaves editor area entirely
-elScroller.addEventListener('focusout',e=>{
-  if(!e.relatedTarget||!elScroller.contains(e.relatedTarget)){
-    // commit active line
-    const idx=S.ed.activeLine;
-    if(idx<0)return;
-    const el=elScroller.querySelector('[data-idx="'+idx+'"]');
-    if(el){
-      const ta=el.querySelector('textarea');
-      if(ta)S.ed.lines[idx]=ta.value;
-      el.classList.remove('active-line');
-      rebuildCodeblockFlags();
-      renderLineEl(el,S.ed.lines[idx]||'');
-      el.style.minHeight='';
-    }
-    S.ed.activeLine=-1;
+// Ctrl+Enter to sync
+me.addEventListener('keydown',e=>{
+  if((e.ctrlKey||e.metaKey)&&e.key==='Enter'){
+    e.preventDefault();syncFile();return;
   }
 });
 
-function applyFmtLine(ta,idx,fmt){
-  const s=ta.selectionStart,e=ta.selectionEnd,sel=ta.value.slice(s,e);
-  const pre=ta.value.slice(0,s),post=ta.value.slice(e);
-  let rep='',nc=s;
-  switch(fmt){
-    case 'bold':    rep='**'+(sel||'bold')+'**';nc=s+(sel?2+sel.length:6);break;
-    case 'italic':  rep='*'+(sel||'italic')+'*';nc=s+(sel?1+sel.length:7);break;
-    case 'strike':  rep='~~'+(sel||'text')+'~~';nc=s+(sel?2+sel.length:6);break;
-    case 'code':    rep='`'+(sel||'code')+'`';nc=s+(sel?1+sel.length:5);break;
-    case 'highlight':rep='=='+(sel||'text')+'==';nc=s+(sel?2+sel.length:6);break;
-    case 'link':    rep='['+(sel||'text')+'](url)';nc=s+(sel?1+sel.length:5)+2;break;
-    case 'wikilink':rep='[['+(sel||'note')+']]';nc=s+(sel?2+sel.length:6);break;
-    case 'h1':      rep='# '+ta.value;ta.value=rep;S.ed.lines[idx]=rep;renderLineEl(ta.closest('.ed-line'),rep);setDirty(true);return;
-    case 'h2':      rep='## '+ta.value;ta.value=rep;S.ed.lines[idx]=rep;renderLineEl(ta.closest('.ed-line'),rep);setDirty(true);return;
-    case 'h3':      rep='### '+ta.value;ta.value=rep;S.ed.lines[idx]=rep;renderLineEl(ta.closest('.ed-line'),rep);setDirty(true);return;
-    case 'ul':      rep='- '+ta.value;ta.value=rep;S.ed.lines[idx]=rep;renderLineEl(ta.closest('.ed-line'),rep);setDirty(true);return;
-    case 'ol':      rep='1. '+ta.value;ta.value=rep;S.ed.lines[idx]=rep;renderLineEl(ta.closest('.ed-line'),rep);setDirty(true);return;
-    case 'todo':    rep='- [ ] '+ta.value;ta.value=rep;S.ed.lines[idx]=rep;renderLineEl(ta.closest('.ed-line'),rep);setDirty(true);return;
-    case 'quote':   rep='> '+ta.value;ta.value=rep;S.ed.lines[idx]=rep;renderLineEl(ta.closest('.ed-line'),rep);setDirty(true);return;
-    case 'hr':      {const el2=ta.closest('.ed-line');const i2=parseInt(el2.dataset.idx);spliceLines(i2+1,0,'---');S.ed.activeLine=-1;activateLine(i2+1,3);setDirty(true);return;}
-    case 'codeblock':{const el2=ta.closest('.ed-line');const i2=parseInt(el2.dataset.idx);spliceLines(i2+1,0,'```','','```');S.ed.activeLine=-1;activateLine(i2+2,0);setDirty(true);return;}
-  }
-  ta.value=pre+rep+post;
-  ta.selectionStart=ta.selectionEnd=nc;
-  S.ed.lines[idx]=ta.value;
-  renderLineEl(ta.closest('.ed-line'),ta.value);
-  autoResizeTA(ta);
-  setDirty(true);
-}
-
-// toolbar clicks
-elToolbar.addEventListener('click',e=>{
-  const b=e.target.closest('[data-fmt]');
-  if(!b)return;
-  const fmt=b.dataset.fmt;
-  const idx=S.ed.activeLine;
-  if(idx<0){
-    // no active line — activate last
-    if(S.ed.lines.length===0)return;
-    activateLine(S.ed.lines.length-1,-1);
-    setTimeout(()=>{
-      const el=elScroller.querySelector('[data-idx="'+(S.ed.lines.length-1)+'"]');
-      if(el)applyFmtLine(el.querySelector('textarea'),S.ed.lines.length-1,fmt);
-    },50);
-    return;
-  }
-  const el=elScroller.querySelector('[data-idx="'+idx+'"]');
-  if(!el)return;
-  const ta=el.querySelector('textarea');
-  applyFmtLine(ta,idx,fmt);
+// Auto-resize on input
+me.addEventListener('input',()=>{
+  me.style.height='auto';
+  me.style.height=Math.max(me.scrollHeight,200)+'px';
 });
+
+// Sync ML overlay when textarea changes
+me.addEventListener('input',()=>{syncMLOverlay();});
+
+// ── Format toolbar via main editor selection ──
 
 function updateWC(){
   const t=getEditorText();
   const w=(t.match(/\S+/g)||[]).length;
   $('wc').textContent=w+' words · '+t.length+' chars';
+}
+
+function getEditorText(){
+  const me=$('main-editor');
+  return me?me.value:'';
+}
+
+// ── Main textarea editor events ──
+const me=$('main-editor');
+if(me){
+  // Input: track dirty, live-preview, auto-resize, debounced save
+  let _saveDebounce=null;
+  me.addEventListener('input',()=>{
+    const text=me.value;
+    S.ed.content=text;
+    setDirty(text!==S.ed.orig);
+    updateWC();
+    renderPreview(text);
+    autoResizeMainEditor();
+    // debounced observer-driven save
+    clearTimeout(_saveDebounce);
+    _saveDebounce=setTimeout(()=>notifySave(), 1500);
+  });
+
+  // Auto-resize
+  function autoResizeMainEditor(){
+    me.style.height='auto';
+    me.style.height=Math.max(me.scrollHeight,200)+'px';
+  }
+
+  // Tab key
+  me.addEventListener('keydown',e=>{
+    if(e.key==='Tab'&&!e.shiftKey){
+      e.preventDefault();
+      const s=me.selectionStart,en=me.selectionEnd;
+      me.value=me.value.slice(0,s)+'  '+me.value.slice(en);
+      me.selectionStart=me.selectionEnd=s+2;
+      S.ed.content=me.value;
+      setDirty(me.value!==S.ed.orig);
+      renderPreview(me.value);
+    }
+    if((e.ctrlKey||e.metaKey)&&e.key==='s'){e.preventDefault();syncFile();}
+    if((e.ctrlKey||e.metaKey)&&e.key==='b'){e.preventDefault();applyFmtSel('bold');}
+    if((e.ctrlKey||e.metaKey)&&e.key==='i'){e.preventDefault();applyFmtSel('italic');}
+  });
+
+  // Scroll sync to preview
+  me.addEventListener('scroll',()=>{
+    const pp=$('preview-pane');
+    if(pp){
+      const ratio=me.scrollTop/(me.scrollHeight-me.clientHeight||1);
+      pp.scrollTop=ratio*(pp.scrollHeight-pp.clientHeight);
+    }
+  });
+}
+
+// WebVim container (hidden by default, shown in webvim mode)
+const webvimContainer=document.createElement('div');
+webvimContainer.id='webvim-container';
+webvimContainer.style.cssText='display:none;flex:1;min-width:0;overflow:hidden;position:relative;background:#0d1117';
+webvimContainer.innerHTML='<textarea id="webvim-editor" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off" style="width:100%;height:100%;background:#0d1117;color:#e6edf3;border:none;outline:none;resize:none;padding:16px 24px;font-family:\'JetBrains Mono\',monospace;font-size:14px;line-height:1.75;tab-size:2;box-sizing:border-box"></textarea>';
+
+// Insert webvim container after main-editor in editor-pane
+const editorPane=$('editor-pane');
+if(editorPane) editorPane.appendChild(webvimContainer);
+
+// View mode state
+let currentViewMode='split'; // 'split' | 'webvim' | 'preview'
+let webvimInited=false;
+
+function setViewMode(mode){
+  currentViewMode=mode;
+  const editorWrap=$('editor-wrap');
+  const previewPane=$('preview-pane');
+  const paneResizerEl=$('pane-resizer');
+  const mainEditor=$('main-editor');
+  const webvimEditor=$('webvim-editor');
+  const viewBtns=document.querySelectorAll('.view-btn');
+
+  viewBtns.forEach(btn=>{
+    const isActive=(btn.id==='btn-view-split'&&mode==='split')||
+                    (btn.id==='btn-view-webvim'&&mode==='webvim')||
+                    (btn.id==='btn-view-preview'&&mode==='preview');
+    btn.classList.toggle('active',isActive);
+  });
+
+  if(mode==='split'){
+    editorWrap.style.display='flex';
+    if(mainEditor) mainEditor.style.display='block';
+    if(webvimContainer) webvimContainer.style.display='none';
+    if(previewPane) previewPane.style.display='block';
+    if(paneResizerEl) paneResizerEl.style.display='flex';
+  } else if(mode==='webvim'){
+    editorWrap.style.display='flex';
+    if(mainEditor) mainEditor.style.display='none';
+    if(webvimContainer) webvimContainer.style.display='flex';
+    if(previewPane) previewPane.style.display='none';
+    if(paneResizerEl) paneResizerEl.style.display='none';
+    if(!webvimInited && webvimEditor){
+      webvimInited=true;
+      webvimEditor.value=getEditorText();
+      if(typeof WebVim!=='undefined'){
+        try{
+          WebVim.init({
+            el:webvimEditor,
+            onInput:()=>{
+              S.ed.content=webvimEditor.value;
+              setDirty(webvimEditor.value!==S.ed.orig);
+              renderPreview(webvimEditor.value);
+              if(mainEditor) mainEditor.value=webvimEditor.value;
+            }
+          });
+        }catch(e){console.warn('WebVim init:',e);}
+      } else {
+        webvimEditor.addEventListener('input',()=>{
+          S.ed.content=webvimEditor.value;
+          setDirty(webvimEditor.value!==S.ed.orig);
+          renderPreview(webvimEditor.value);
+          if(mainEditor) mainEditor.value=webvimEditor.value;
+        });
+        webvimEditor.addEventListener('keydown',e=>{
+          if(e.key==='Tab'){e.preventDefault();const s=webvimEditor.selectionStart,en=webvimEditor.selectionEnd;webvimEditor.value=webvimEditor.value.slice(0,s)+'  '+webvimEditor.value.slice(en);webvimEditor.selectionStart=webvimEditor.selectionEnd=s+2;}
+          if((e.ctrlKey||e.metaKey)&&e.key==='s'){e.preventDefault();syncFile();}
+        });
+      }
+    } else if(webvimEditor){
+      webvimEditor.value=getEditorText();
+    }
+  } else if(mode==='preview'){
+    editorWrap.style.display='flex';
+    if(mainEditor) mainEditor.style.display='none';
+    if(webvimContainer) webvimContainer.style.display='none';
+    if(previewPane) previewPane.style.display='block';
+    if(paneResizerEl) paneResizerEl.style.display='none';
+  }
+  try{localStorage.setItem('obsidian-web-view-mode',mode);}catch(e){}
+}
+
+try{
+  const saved=localStorage.getItem('obsidian-web-view-mode');
+  if(saved)setViewMode(saved);
+}catch(e){}
+
+document.getElementById('btn-view-split')?.addEventListener('click',()=>setViewMode('split'));
+document.getElementById('btn-view-webvim')?.addEventListener('click',()=>setViewMode('webvim'));
+document.getElementById('btn-view-preview')?.addEventListener('click',()=>setViewMode('preview'));
+
+// Apply formatting to current selection in main editor
+function applyFmtSel(fmt){
+  const me=$('main-editor');
+  if(!me)return;
+  if(!fmt){return;}
+  const s=me.selectionStart,e=me.selectionEnd,sel=me.value.slice(s,e);
+  const pre=me.value.slice(0,s),post=me.value.slice(e);
+  let rep='',nc=s;
+  switch(fmt){
+    case 'bold':rep='**'+(sel||'bold')+'**';nc=s+(sel?2+sel.length:6);break;
+    case 'italic':rep='*'+(sel||'italic')+'*';nc=s+(sel?1+sel.length:7);break;
+    case 'strike':rep='~~'+(sel||'text')+'~~';nc=s+(sel?2+sel.length:6);break;
+    case 'code':rep='`'+(sel||'code')+'`';nc=s+(sel?1+sel.length:5);break;
+    case 'highlight':rep='=='+(sel||'text')+'==';nc=s+(sel?2+sel.length:6);break;
+    case 'link':rep='['+(sel||'text')+'](url)';nc=s+(sel?1+sel.length:5)+2;break;
+    case 'wikilink':rep='[['+(sel||'note')+']]';nc=s+(sel?2+sel.length:6);break;
+    case 'h1':{const lineStart=pre.lastIndexOf('\n')+1;const val=me.value;me.value=val.slice(0,lineStart)+'# '+val.slice(lineStart);me.selectionStart=me.selectionEnd=lineStart+2+(sel?sel.length:0);S.ed.content=me.value;setDirty(me.value!==S.ed.orig);renderPreview(me.value);return;}
+    case 'h2':{const lineStart=pre.lastIndexOf('\n')+1;const val=me.value;me.value=val.slice(0,lineStart)+'## '+val.slice(lineStart);me.selectionStart=me.selectionEnd=lineStart+3+(sel?sel.length:0);S.ed.content=me.value;setDirty(me.value!==S.ed.orig);renderPreview(me.value);return;}
+    case 'h3':{const lineStart=pre.lastIndexOf('\n')+1;const val=me.value;me.value=val.slice(0,lineStart)+'### '+val.slice(lineStart);me.selectionStart=me.selectionEnd=lineStart+4+(sel?sel.length:0);S.ed.content=me.value;setDirty(me.value!==S.ed.orig);renderPreview(me.value);return;}
+    case 'ul':{const lineStart=pre.lastIndexOf('\n')+1;const val=me.value;me.value=val.slice(0,lineStart)+'- '+val.slice(lineStart);me.selectionStart=me.selectionEnd=lineStart+2+(sel?sel.length:0);S.ed.content=me.value;setDirty(me.value!==S.ed.orig);renderPreview(me.value);return;}
+    case 'ol':{const lineStart=pre.lastIndexOf('\n')+1;const val=me.value;me.value=val.slice(0,lineStart)+'1. '+val.slice(lineStart);me.selectionStart=me.selectionEnd=lineStart+3+(sel?sel.length:0);S.ed.content=me.value;setDirty(me.value!==S.ed.orig);renderPreview(me.value);return;}
+    case 'todo':{const lineStart=pre.lastIndexOf('\n')+1;const val=me.value;me.value=val.slice(0,lineStart)+'- [ ] '+val.slice(lineStart);me.selectionStart=me.selectionEnd=lineStart+6+(sel?sel.length:0);S.ed.content=me.value;setDirty(me.value!==S.ed.orig);renderPreview(me.value);return;}
+    case 'quote':{const lineStart=pre.lastIndexOf('\n')+1;const val=me.value;me.value=val.slice(0,lineStart)+'> '+val.slice(lineStart);me.selectionStart=me.selectionEnd=lineStart+2+(sel?sel.length:0);S.ed.content=me.value;setDirty(me.value!==S.ed.orig);renderPreview(me.value);return;}
+    case 'codeblock':{const cs=me.selectionStart,ce=me.selectionEnd;const val=me.value;me.value=val.slice(0,cs)+'```\n'+val.slice(cs,ce)+'\n```'+val.slice(ce);me.selectionStart=cs+4;me.selectionEnd=ce+4;S.ed.content=me.value;setDirty(me.value!==S.ed.orig);renderPreview(me.value);return;}
+    case 'hr':{const lineStart=pre.lastIndexOf('\n')+1;const val=me.value;me.value=val.slice(0,lineStart)+'---\n'+val.slice(lineStart);me.selectionStart=me.selectionEnd=lineStart+4;S.ed.content=me.value;setDirty(me.value!==S.ed.orig);renderPreview(me.value);return;}
+    default:return;
+  }
+  me.value=pre+rep+post;
+  me.selectionStart=me.selectionEnd=nc;
+  S.ed.content=me.value;
+  setDirty(me.value!==S.ed.orig);
+  renderPreview(me.value);
+}
+
+// ── Preview pane resizer ──
+const paneResizer=$('pane-resizer');
+if(paneResizer){
+  let dragging=false,startX=0,startLeft=0,startRight=0;
+  paneResizer.addEventListener('mousedown',e=>{
+    dragging=true;
+    startX=e.clientX;
+    const leftPane=$('editor-pane');
+    const rightPane=$('preview-pane');
+    startLeft=leftPane.offsetWidth;
+    startRight=rightPane.offsetWidth;
+    paneResizer.classList.add('dragging');
+    document.body.style.userSelect='none';
+    document.body.style.cursor='col-resize';
+  });
+  document.addEventListener('mousemove',e=>{
+    if(!dragging)return;
+    const delta=e.clientX-startX;
+    const totalW=startLeft+startRight+1;
+    const newLeft=Math.max(150,Math.min(totalW-150,startLeft+delta));
+    const leftPane=$('editor-pane');
+    const rightPane=$('preview-pane');
+    if(leftPane)leftPane.style.flex='none',leftPane.style.width=newLeft+'px';
+    if(rightPane)rightPane.style.flex='none',rightPane.style.width=(totalW-newLeft)+'px';
+  });
+  document.addEventListener('mouseup',()=>{
+    if(!dragging)return;
+    dragging=false;
+    paneResizer.classList.remove('dragging');
+    document.body.style.userSelect='';
+    document.body.style.cursor='';
+  });
 }
 
 // ── Multi-line overlay textarea (Ctrl+A, copy, multi-select) ──
@@ -1460,7 +1690,7 @@ function syncMLOverlay(){
 // Ctrl+A → select all via overlay
 document.addEventListener('keydown',e=>{
   if((e.ctrlKey||e.metaKey)&&e.key==='a'){
-    const inEditor=elScroller.contains(document.activeElement)||document.activeElement===mlOverlay;
+    const inEditor=me&&(me===document.activeElement||me.parentElement?.contains(document.activeElement));
     if(!inEditor)return;
     e.preventDefault();
     // Sync overlay content first
@@ -1469,8 +1699,9 @@ document.addEventListener('keydown',e=>{
     mlOverlay.style.pointerEvents='auto';
     mlOverlay.focus();
     mlOverlay.select();
-    // Show selection highlight
-    elScroller.classList.add('has-ml-sel');
+    // Show selection highlight on preview
+    const preview=$('preview-content');
+    if(preview)preview.classList.add('has-ml-sel');
     setTimeout(()=>{
       // let selection be visible; revert after copy or keypress
     },0);
@@ -1501,7 +1732,13 @@ mlOverlay.addEventListener('keydown',e=>{
     deactivateOverlay();
     // activate the line where cursor ended up
     const lineIdx=before.split('\n').length-1;
-    setTimeout(()=>activateLine(Math.min(lineIdx,S.ed.lines.length-1),0),0);
+    const pos=before.split('\n').pop().length;
+    setTimeout(()=>{
+      if(!me)return;
+      const lines=me.value.split('\n');
+      me.selectionStart=me.selectionEnd=lines.slice(0,lineIdx+1).join('\n').length+(lineIdx<lines.length-1?0:0);
+      me.focus();
+    },0);
     return;
   }
   // Delete/Backspace on selection
@@ -1515,8 +1752,8 @@ mlOverlay.addEventListener('keydown',e=>{
       loadEditor(newText);
       setDirty(newText!==S.ed.orig);
       deactivateOverlay();
-      const lineIdx=before.split('\n').length-1;
-      setTimeout(()=>activateLine(Math.min(lineIdx,S.ed.lines.length-1),before.split('\n').pop().length),0);
+      const pos=before.split('\n').pop().length;
+      setTimeout(()=>{if(!me)return;me.focus();me.selectionStart=me.selectionEnd=Math.min(me.value.length,before.length);},0);
       return;
     }
   }
@@ -1533,28 +1770,24 @@ mlOverlay.addEventListener('paste',e=>{
   loadEditor(newText);
   setDirty(newText!==S.ed.orig);
   deactivateOverlay();
-  const lineIdx=(before+pasted).split('\n').length-1;
-  setTimeout(()=>activateLine(Math.min(lineIdx,S.ed.lines.length-1),0),0);
+  const pos=(before+pasted).split('\n').pop().length;
+  setTimeout(()=>{if(!me)return;me.focus();me.selectionStart=me.selectionEnd=Math.min(me.value.length,before.length+pasted.length);},0);
 });
 
 function deactivateOverlay(){
   mlOverlay.classList.remove('capturing');
   mlOverlay.style.pointerEvents='none';
-  elScroller.classList.remove('has-ml-sel');
+  const preview=$('preview-content');
+  if(preview)preview.classList.remove('has-ml-sel');
 }
 
 mlOverlay.addEventListener('blur',()=>deactivateOverlay());
 
 // ── Re-render button ──
 $('btn-rerender').addEventListener('click',()=>{
-  // Commit active line first
-  const idx=S.ed.activeLine;
-  if(idx>=0){
-    const el=elScroller.querySelector('[data-idx="'+idx+'"]');
-    if(el){const ta=el.querySelector('textarea');if(ta)S.ed.lines[idx]=ta.value;}
-  }
   const txt=getEditorText();
-  loadEditor(txt,false);
+  S.ed.content=txt;
+  loadEditor(txt);
   setDirty(txt!==S.ed.orig);
   toast('Re-rendered');
 });
@@ -1605,7 +1838,7 @@ $('btn-rerender').addEventListener('click',()=>{
       const fakePath='[local] '+f.name;
       S.ed.path=fakePath;
       S.ed.orig=text;
-      S.ed.lines=[];
+      S.ed.content=text;
       activeFile=fakePath;
       elEmpty.style.display='none';
       elToolbar.classList.remove('hidden');
@@ -1704,10 +1937,8 @@ function acConfirm(ta,lineIdx){
   const start=before.length-m[0].length;
   ta.value=ta.value.slice(0,start)+'[['+name+']]'+ta.value.slice(cur);
   ta.selectionStart=ta.selectionEnd=start+name.length+4;
-  S.ed.lines[lineIdx]=ta.value;
-  renderLineEl(ta.closest('.ed-line'),ta.value);
-  autoResizeTA(ta);
-  setDirty(true);
+  S.ed.content=ta.value;
+  setDirty(ta.value!==S.ed.orig);
   hideAC();
 }
 
@@ -1717,12 +1948,9 @@ acEl.addEventListener('mousedown',e=>{
   if(!li)return;
   acEl.querySelectorAll('li').forEach(l=>l.classList.remove('sel'));
   li.classList.add('sel');acIdx=[...acEl.querySelectorAll('li')].indexOf(li);
-  // find active textarea
-  const idx=S.ed.activeLine;
-  if(idx<0)return;
-  const el=elScroller.querySelector('[data-idx="'+idx+'"]');
-  if(!el)return;
-  acConfirm(el.querySelector('textarea'),idx);
+  // find main editor textarea
+  if(S.ed.activeLine<0)return;
+  acConfirm(me, S.ed.activeLine);
 });
 
 document.addEventListener('click',e=>{
@@ -1730,14 +1958,20 @@ document.addEventListener('click',e=>{
 });
 
 // ── sync ──
+function setSyncStatus(msg,isError=false){
+  const dot=$('sync-dot');
+  const label=$('sync-label');
+  const errBadge=$('sync-error-badge');
+  if(dot)dot.style.background=isError?'#f85149':(msg?'#f0b72f':'#238636');
+  if(label)label.textContent=msg||'Connected';
+  if(errBadge){
+    if(isError&&msg){errBadge.textContent=msg;errBadge.classList.remove('hidden');}
+    else errBadge.classList.add('hidden');
+  }
+}
+
 async function syncFile(){
   if(!S.ed.dirty||!S.ed.path)return;
-  // commit active line first
-  const idx=S.ed.activeLine;
-  if(idx>=0){
-    const el=elScroller.querySelector('[data-idx="'+idx+'"]');
-    if(el){const ta=el.querySelector('textarea');S.ed.lines[idx]=ta.value;}
-  }
   const content=getEditorText();
   elSync.disabled=true;
   const origHTML=elSync.innerHTML;
@@ -1745,21 +1979,39 @@ async function syncFile(){
   try{
     await commitFile(S.ed.path,content);
     S.ed.orig=content;
-    setDirty(false);
+    S.ed.dirty=false;
+    elDirty.classList.add('hidden');
     toast('Pushed: '+S.ed.path);
-  }catch(err){toast(err?.message||'Push failed',false);}
-  finally{elSync.innerHTML=origHTML;if(!S.ed.dirty)elSync.disabled=false;}
+    setSyncStatus('Synced just now');
+    S.sync.lastSync=new Date();
+  }catch(err){toast(err?.message||'Push failed',false);setSyncStatus(err?.message||'Push failed',true);}
+  finally{elSync.innerHTML=origHTML;elSync.disabled=S.ed.dirty;}
 }
 elSync.addEventListener('click',syncFile);
 
+// ── auto-sync ──
+function startAutoSync(){
+  stopAutoSync();
+  if(!S.cfg.autoSync||!S.cfg.syncInterval)return;
+  S.sync.interval=setInterval(async()=>{
+    if(!S.ed.path)return;
+    if(S.ed.dirty)return; // skip if dirty (will sync on next idle)
+    try{
+      const remote=await readFile(S.ed.path);
+      if(remote!==S.ed.orig){
+        S.sync.remoteChanged=true;
+        $('sync-remote-badge')?.classList.remove('hidden');
+        setSyncStatus('Remote changed');
+      }
+    }catch(e){}
+  },S.cfg.syncInterval*1000);
+}
+function stopAutoSync(){
+  if(S.sync.interval){clearInterval(S.sync.interval);S.sync.interval=null;}
+}
+
 // ── open file ──
 async function openFile(path){
-  // deactivate current line first
-  if(S.ed.activeLine>=0){
-    const prev=elScroller.querySelector('[data-idx="'+S.ed.activeLine+'"]');
-    if(prev){const ta=prev.querySelector('textarea');if(ta)S.ed.lines[S.ed.activeLine]=ta.value;prev.classList.remove('active-line');}
-  }
-  S.ed.activeLine=-1;
   activeFile=path;S.ed.path=path;
   document.querySelectorAll('.tree-file').forEach(el=>el.classList.toggle('active',el.dataset.file===path));
   elEmpty.style.display='none';
@@ -1777,19 +2029,21 @@ async function openFile(path){
 
   elImgViewer.style.display='none';
   elWrap.style.display='flex';
-  elScroller.innerHTML='<div style="color:#8b949e;padding:12px;font-size:12px">Loading…</div>';
 
   if(!MDEXT.test(path)){
-    // binary or non-md text
-    elScroller.innerHTML='<div style="color:#8b949e;padding:12px;font-size:12px">Cannot edit this file type.</div>';
+    $('main-editor').value='[Cannot edit this file type — binary or non-markdown]';
     return;
   }
 
   try{
     const text=await readFile(path);
     S.ed.orig=text;
+    S.ed.content=text;
     S._contentCache[path]=text;
     loadEditor(text);
+    // Also sync webvim editor if in webvim mode
+    const we=$('webvim-editor');
+    if(we&&currentViewMode==='webvim') we.value=text;
     // parse frontmatter → show props
     const{props}=parseFrontmatter(text);
     if(Object.keys(props).length>0){
@@ -1801,7 +2055,11 @@ async function openFile(path){
       $('props-panel').classList.remove('open');
       $('props-caret').style.transform='rotate(0deg)';
     }
-  }catch(err){elScroller.innerHTML='<span style="color:#f85149;padding:12px;display:block">Error: '+esc(err?.message||'')+'</span>';}
+    // Pull on open if enabled
+    if(S.cfg.pullOnOpen){
+      startAutoSync();
+    }
+  }catch(err){$('main-editor').value='[Error loading: '+esc(err?.message||'')+']';}
 }
 
 function openFileByName(name){
@@ -2074,11 +2332,19 @@ const modal=$('modal-settings');
 const [inpPAT,inpOwner,inpRepo,inpBranch,inpDaily]=['inp-pat','inp-owner','inp-repo','inp-branch','inp-daily-folder'].map($);
 const inpDailyFmt=$('inp-daily-fmt');
 const inpDailyTpl=$('inp-daily-template');
+const inpAutoSync=$('inp-auto-sync');
+const inpSyncInterval=$('inp-sync-interval');
+const inpPullOnOpen=$('inp-pull-on-open');
+const inpConflictDetect=$('inp-conflict-detect');
 function openSettings(){
   const c=loadCfg();
   inpPAT.value=c.pat;inpOwner.value=c.owner;inpRepo.value=c.repo;inpBranch.value=c.branch;inpDaily.value=c.dailyFolder;
   if(inpDailyFmt)inpDailyFmt.value=c.dailyFmt||'YYYY-MM-DD';
   if(inpDailyTpl)inpDailyTpl.value=c.dailyTemplate||'# {{date}}\n\n## Tasks\n\n## Notes\n';
+  if(inpAutoSync)inpAutoSync.checked=c.autoSync||false;
+  if(inpSyncInterval)inpSyncInterval.value=c.syncInterval||60;
+  if(inpPullOnOpen)inpPullOnOpen.checked=c.pullOnOpen!==false;
+  if(inpConflictDetect)inpConflictDetect.checked=c.conflictDetect!==false;
   modal.classList.remove('hidden');
 }
 const closeSettings=()=>modal.classList.add('hidden');
@@ -2090,7 +2356,11 @@ $('btn-save-connect').addEventListener('click',async()=>{
   const cfg={pat:inpPAT.value.trim(),owner:inpOwner.value.trim(),repo:inpRepo.value.trim(),
               branch:inpBranch.value.trim()||'main',dailyFolder:inpDaily.value.trim()||'Daily Notes',
               dailyFmt:(inpDailyFmt&&inpDailyFmt.value)||'YYYY-MM-DD',
-              dailyTemplate:(inpDailyTpl&&inpDailyTpl.value)||'# {{date}}\n\n## Tasks\n\n## Notes\n'};
+              dailyTemplate:(inpDailyTpl&&inpDailyTpl.value)||'# {{date}}\n\n## Tasks\n\n## Notes\n',
+              autoSync:inpAutoSync?inpAutoSync.checked:false,
+              syncInterval:inpSyncInterval?parseInt(inpSyncInterval.value)||60:60,
+              pullOnOpen:inpPullOnOpen?inpPullOnOpen.checked:true,
+              conflictDetect:inpConflictDetect?inpConflictDetect.checked:true};
   if(!cfg.pat||!cfg.owner||!cfg.repo){toast('All fields required',false);return;}
   const lbl=$('connect-label'),spin=$('connect-spinner');
   lbl.textContent='Connecting…';spin.classList.remove('hidden');
@@ -2101,6 +2371,8 @@ $('btn-save-connect').addEventListener('click',async()=>{
     $('repo-label').classList.remove('hidden');
     renderTree(tree);toast('Connected — '+tree.filter(t=>t.type==='blob').length+' files');
     closeSettings();
+    if(cfg.autoSync)startAutoSync();
+    else stopAutoSync();
   }catch(err){toast(err?.message||'Connection failed',false);}
   finally{lbl.textContent='Save & Connect';spin.classList.add('hidden');}
 });
@@ -2125,8 +2397,8 @@ function buildGraph(){
   // Parse from all cached content
   const cache=S._contentCache;
   // Also include current editor content
-  if(S.ed.path&&S.ed.lines.length){
-    cache[S.ed.path]=getEditorText();
+  if(S.ed.path&&S.ed.content){
+    cache[S.ed.path]=S.ed.content;
   }
   Object.entries(cache).forEach(([srcPath,content])=>{
     if(!MDEXT.test(srcPath))return;
@@ -2172,7 +2444,7 @@ function openGraph(){
   const notes=S.tree.filter(t=>t.type==='blob'&&MDEXT.test(t.path));
   const missing=notes.filter(t=>!S._contentCache[t.path]);
   // include current editor
-  if(S.ed.path&&S.ed.lines.length)S._contentCache[S.ed.path]=getEditorText();
+  if(S.ed.path&&S.ed.content)S._contentCache[S.ed.path]=getEditorText();
   if(!missing.length){
     const{nodes,links}=buildGraph();
     _gNodes=nodes;_gLinks=links;
@@ -2485,6 +2757,7 @@ function renderGraphSVG(nodes,links){
     $('repo-label').textContent=c.owner+'/'+c.repo+'@'+c.branch;
     $('repo-label').classList.remove('hidden');
     fetchTree().then(t=>{renderTree(t);$('tree-loading')?.remove();}).catch(()=>openSettings());
+    if(c.autoSync)startAutoSync();
   }else{
     $('tree-loading').innerHTML='<p class="text-xs text-[#8b949e] px-3">No repo configured</p>';
     openSettings();
