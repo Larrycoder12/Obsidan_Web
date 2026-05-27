@@ -83,14 +83,18 @@ def process_file(html_path, output_path=None):
     # ── 3. Process <link> tags (CSS) ─────────────────────────────────────────
     def inline_css(match):
         tag = match.group(0)
-        href = match.group(1)
+        href_match = re.search(r'href=["\']([^"\']+)["\']', tag)
+        if not href_match:
+            return tag
+        href = href_match.group(1)
+        href_basename = href.split("/")[-1]
         for css_url, css_content in css_map.items():
-            if css_url.endswith(href) or href in css_url:
-                # Wrap in <style> tag
+            css_basename = css_url.split("/")[-1]
+            if css_basename == href_basename or href in css_url:
                 return f"<style>\n{css_content}\n</style>"
         return tag  # keep original if not found
 
-    html = re.sub(r'<link([^>]+)>', inline_css, html)
+    html = re.sub(r'<link([^>]+)/?>', inline_css, html)
 
     # Remove duplicate/tailwind-specific link tags that reference our inlined CSS
     # ── 4. Process <script> tags (JS) ────────────────────────────────────────
