@@ -108,7 +108,34 @@ def process_file(html_path, output_path=None):
 
     html = re.sub(r'<link([^>]+)/?>', inline_css, html)
 
-    # ── 4. Process <script> tags (JS) — replace CDN src with inlined content ─
+    # ── 4. Inline local <script src="..."> files ───────────────────────────────
+    def inline_local_js(match):
+        tag = match.group(0)
+        src = re.search(r'src=["\']([^"\']+)["\']', tag)
+        if not src:
+            return tag
+        src_url = src.group(1)
+        # Skip external URLs and data URIs
+        if src_url.startswith('http://') or src_url.startswith('https://') or src_url.startswith('data:'):
+            return tag
+        # Skip Tailwind CDN
+        if TAILWIND_CDN in src_url:
+            return tag
+        # Try to read local file relative to the HTML file's directory
+        local_path = os.path.join(os.path.dirname(os.path.abspath(html_path)), src_url)
+        if os.path.exists(local_path):
+            try:
+                with open(local_path, 'r', encoding='utf-8') as f:
+                    content = f.read()
+                print(f"  [INLINE] local: {src_url}")
+                return f"<script>\n{content}\n</script>"
+            except Exception as e:
+                print(f"  [WARN] Could not read local file {local_path}: {e}")
+        return tag
+
+    html = re.sub(r'<script[^>]*>', inline_local_js, html)
+
+    # ── 5. Process <script> tags (JS) — replace CDN src with inlined content ─
     def inline_js(match):
         tag_content = match.group(0)
         src = re.search(r'src=["\']([^"\']+)["\']', tag_content)
@@ -126,7 +153,7 @@ def process_file(html_path, output_path=None):
 
     html = re.sub(r'<script[^>]*>.*?</script>', inline_js, html, flags=re.DOTALL)
 
-    # ── 5. Inject CDN resources NOT already inline in the source ─────────────
+    # ── 6. Inject CDN resources NOT already inline in the source ─────────────
     # The source HTML already has KaTeX, Mermaid, CodeMirror as UMD bundles without src attrs.
     # We detect collisions via content hash and skip injecting if already present.
     injected = []
